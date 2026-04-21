@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tafo Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;600;700&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#1d6ff5;--pd:#1045b0;--ps:rgba(29,111,245,.16);--pb:rgba(29,111,245,.38);
+  --bg:#080a0f;--s:#0e1017;--s2:#141720;--b:rgba(29,111,245,.14);
+  --t:#dde6ff;--m:#8a94aa;--card:#0d0f18;
+}
+body{color:var(--t);min-height:100vh;overflow-x:hidden;background:var(--bg);font-family:'Inter',sans-serif}
+body.font-orbitron{font-family:'Orbitron',sans-serif!important}
+body.font-inter{font-family:'Inter',sans-serif!important}
+body.font-grotesk{font-family:'Space Grotesk',sans-serif!important}
+body.font-rajdhani{font-family:'Rajdhani',sans-serif!important}
+body.font-mono{font-family:'Share Tech Mono',monospace!important}
+
+/* APP */
+#app{display:block;position:relative;z-index:1}
+header{padding:0 18px;height:54px;background:rgba(8,10,15,.95);backdrop-filter:blur(18px);border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:10px}
+.logo{font-size:19px;font-weight:900;letter-spacing:2px;color:#fff;flex-shrink:0;text-shadow:0 0 22px rgba(29,111,245,.4)}
+.logo span{color:var(--p)}
+.header-right{display:flex;align-items:center;gap:8px}
+#search{background:var(--s2);border:1px solid var(--b);color:var(--t);padding:7px 14px;border-radius:6px;outline:none;width:160px;font-size:13px;transition:.2s;font-family:inherit;cursor:text}
+#search:focus{border-color:var(--pb);width:200px;box-shadow:0 0 12px rgba(29,111,245,.15)}
+#search::placeholder{color:rgba(29,111,245,.3)}
+.icon-btn{background:var(--s2);border:1px solid var(--b);width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;cursor:pointer}
+.icon-btn:hover{background:var(--ps);border-color:var(--pb)}
+.icon-btn svg{width:16px;height:16px;fill:rgba(29,111,245,.55);transition:.2s}
+.icon-btn:hover svg{fill:var(--p)}
+
+/* SETTINGS */
+#settings{position:fixed;top:0;right:-320px;width:300px;height:100vh;background:#0b0d16;border-left:1px solid var(--b);z-index:5000;transition:right .3s ease-out;overflow-y:auto;padding:20px}
+#settings.open{right:0}
+.settings-title{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--pb);margin-bottom:24px;display:flex;justify-content:space-between;align-items:center}
+.settings-title button{background:none;border:none;color:rgba(29,111,245,.4);font-size:16px;line-height:1;cursor:pointer}
+.settings-title button:hover{color:var(--p)}
+.set-section{margin-bottom:20px}
+.set-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(29,111,245,.4);margin-bottom:8px}
+.set-options{display:flex;flex-wrap:wrap;gap:5px}
+.set-opt{padding:6px 11px;border-radius:4px;border:1px solid var(--b);background:transparent;font-size:12px;font-weight:600;color:rgba(29,111,245,.5);transition:.2s;cursor:pointer}
+.set-opt:hover{border-color:var(--pb);color:var(--p)}
+.set-opt.active{border-color:var(--p);background:var(--ps);color:var(--p)}
+#set-backdrop{position:fixed;inset:0;z-index:4999;display:none}
+#set-backdrop.open{display:block}
+
+/* GRID */
+.container{padding:14px}
+.section-head{display:flex;align-items:center;gap:10px;margin:18px 0 10px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(29,111,245,.45)}
+.section-line{flex:1;height:1px;background:linear-gradient(to right,var(--b),transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
+#featured{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.game-card{position:relative;border-radius:10px;overflow:hidden;transition:transform .25s,box-shadow .25s;border:1px solid rgba(29,111,245,.18);background:var(--card);cursor:pointer}
+.game-card:hover{transform:translateY(-4px);border-color:rgba(29,111,245,.55);box-shadow:0 8px 28px rgba(29,111,245,.18)}
+.img-box{width:100%;aspect-ratio:4/3;overflow:hidden;position:relative;background:#0c0e1a}
+.game-card img{width:100%;height:100%;object-fit:cover;transition:.4s;display:block}
+.game-card:hover img{transform:scale(1.06)}
+.img-box::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(4,6,16,.85) 0%,transparent 55%);pointer-events:none}
+.play-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.65);width:42px;height:42px;background:var(--p);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;z-index:3;box-shadow:0 0 24px rgba(29,111,245,.65)}
+.play-badge svg{width:15px;height:15px;fill:#fff;margin-left:3px}
+.game-card:hover .play-badge{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.title-bar{padding:9px 11px;background:var(--card);border-top:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.card-dot{width:5px;height:5px;border-radius:50%;background:rgba(29,111,245,.25);flex-shrink:0;transition:.2s}
+.game-card:hover .card-dot{background:var(--p);box-shadow:0 0 6px rgba(29,111,245,.7)}
+.game-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize;color:var(--m);transition:.2s;font-family:inherit}
+.game-card:hover .game-name{color:var(--t)}
+
+/* LOADING / ERROR */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 20px;color:var(--m);font-size:12px;letter-spacing:3px;text-transform:uppercase}
+.spinner{width:32px;height:32px;border:2px solid var(--b);border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-wrap{text-align:center;padding:80px 20px;color:var(--m)}
+.error-wrap h3{color:var(--t);margin-bottom:8px;font-size:15px}
+.retry-btn{margin-top:14px;background:var(--ps);border:1px solid var(--pb);color:var(--p);padding:8px 20px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.retry-btn:hover{background:var(--pb);color:#fff}
+
+/* GAME VIEW */
+#game-view{position:fixed;inset:0;background:#060810;z-index:10000;display:none;flex-direction:column;height:100vh;width:100vw}
+@keyframes gvOpen{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes gvClose{0%{opacity:1;transform:scale(1)}50%{opacity:.8;transform:scale(1.01)}100%{opacity:0;transform:scale(.92)}}
+#game-view.opening{animation:gvOpen .2s ease-out forwards}
+#game-view.closing{animation:gvClose .28s ease-in forwards}
+.top-nav{padding:0 16px;height:50px;background:rgba(6,8,16,.98);border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+#display-name{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;color:rgba(29,111,245,.6);font-family:inherit;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-btns{display:flex;gap:8px;align-items:center}
+.nav-btn{background:var(--s2);border:1px solid var(--b);width:36px;height:36px;border-radius:6px;transition:.2s;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.nav-btn:hover{background:var(--ps);border-color:var(--pb)}
+.nav-btn svg{width:16px;height:16px;fill:rgba(29,111,245,.5);transition:.2s}
+.nav-btn:hover svg{fill:var(--p)}
+.tab-btn{background:var(--s2);border:1px solid var(--b);height:36px;padding:0 12px;border-radius:6px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(29,111,245,.55);transition:.2s;white-space:nowrap;cursor:pointer}
+.tab-btn:hover{background:var(--ps);border-color:var(--pb);color:var(--p)}
+.tab-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.close-btn{width:36px;height:36px;border-radius:6px;background:var(--s2);border:1px solid rgba(255,80,80,.2);display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer}
+.close-btn:hover{background:rgba(255,60,60,.15);border-color:rgba(255,80,80,.5);box-shadow:0 0 12px rgba(255,60,60,.2)}
+.close-x{width:14px;height:14px;position:relative}
+.close-x::before,.close-x::after{content:'';position:absolute;width:100%;height:1.5px;background:rgba(255,100,100,.7);top:50%;left:0;border-radius:1px;transition:.2s}
+.close-x::before{transform:translateY(-50%) rotate(45deg)}
+.close-x::after{transform:translateY(-50%) rotate(-45deg)}
+.close-btn:hover .close-x::before,.close-btn:hover .close-x::after{background:#ff6464}
+.gframe-wrap{position:relative;flex:1;display:flex;min-height:0;overflow:hidden}
+#gameFrame{flex:1;border:none;width:100%;height:100%;display:block;background:#fff}
+.gframe-wrap::before{content:'';position:absolute;inset:0;border:1px solid rgba(29,111,245,.35);box-shadow:0 0 40px rgba(29,111,245,.1),inset 0 0 20px rgba(29,111,245,.03);pointer-events:none;z-index:2;border-radius:2px}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#0e1117;border:1px solid var(--b);color:var(--t);padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:99999;display:flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 24px rgba(29,111,245,.18)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast svg{width:14px;height:14px;fill:var(--p);flex-shrink:0}
+
+/* NEW BANNER */
+#new-banner{position:fixed;top:62px;left:50%;transform:translateX(-50%) translateY(-80px);background:#0e1117;border:1px solid var(--b);color:var(--t);padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transition:all .35s ease-out;pointer-events:none;z-index:99999;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(29,111,245,.15)}
+#new-banner.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#new-banner button{background:var(--ps);border:1px solid var(--b);color:var(--p);padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:.2s;cursor:pointer}
+#new-banner button:hover{background:var(--pb);color:#fff}
+.nb-dot{width:6px;height:6px;border-radius:50%;background:var(--p);flex-shrink:0;animation:nbp 1.2s ease infinite;box-shadow:0 0 6px var(--p)}
+@keyframes nbp{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body class="font-inter">
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="logo">TAFO<span>.</span>GAMES</div>
+    <div class="header-right">
+      <input type="text" id="search" placeholder="Search games..." oninput="filter()">
+      <button class="icon-btn" onclick="openSettings()" title="Settings">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.02 7.02 0 00-1.62-.94l-.36-2.54A.484.484 0 0014 2h-4a.484.484 0 00-.48.41l-.36 2.54a7.38 7.38 0 00-1.62.94l-2.39-.96a.48.48 0 00-.59.22L2.74 8.47a.47.47 0 00.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.27.41.49.41h4c.22 0 .43-.17.47-.41l.36-2.54a7.38 7.38 0 001.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 00-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="container">
+    <div id="games-area">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <span>Loading Games...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME VIEW -->
+<div id="game-view">
+  <div class="top-nav">
+    <span id="display-name"></span>
+    <div class="nav-btns">
+      <button class="nav-btn" id="dl-btn" onclick="downloadGame()" title="Download HTML">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      </button>
+      <button class="nav-btn" onclick="toggleFS()" title="Fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <button class="tab-btn" onclick="openInTab()">
+        <svg viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M11 3h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17 3L10.5 9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        New Tab
+      </button>
+      <button class="close-btn" onclick="closeGame()" title="Close"><div class="close-x"></div></button>
+    </div>
+  </div>
+  <div class="gframe-wrap">
+    <iframe id="gameFrame" allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock"></iframe>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="set-backdrop" onclick="closeSettings()"></div>
+<div id="settings">
+  <div class="settings-title">SETTINGS <button onclick="closeSettings()">&#10005;</button></div>
+  <div class="set-section">
+    <div class="set-label">Font</div>
+    <div class="set-options">
+      <div class="set-opt active" data-font="font-inter" onclick="setFont(this)">Inter</div>
+      <div class="set-opt" data-font="font-orbitron" onclick="setFont(this)">Orbitron</div>
+      <div class="set-opt" data-font="font-grotesk" onclick="setFont(this)">Grotesk</div>
+      <div class="set-opt" data-font="font-rajdhani" onclick="setFont(this)">Rajdhani</div>
+      <div class="set-opt" data-font="font-mono" onclick="setFont(this)">Mono</div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW GAMES BANNER -->
+<div id="new-banner">
+  <div class="nb-dot"></div>
+  <span id="nb-msg"></span>
+  <button onclick="reloadGames()">Refresh</button>
+  <button onclick="dismissBanner()" style="background:none;border:none;font-size:15px;padding:0 2px;color:rgba(29,111,245,.5);cursor:pointer">&#10005;</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+  Downloaded from TafoHub
+</div>
+
+<script>
+const COVERS_BASE = "https://cdn.jsdelivr.net/gh/freebuisness/covers@main";
+const HTML_BASE   = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
+const ZONES_URL   = "https://cdn.jsdelivr.net/gh/freebuisness/assets@main/zones.json";
+
+let games = [], curName = "", curItem = null, curURL = "", curHTML = "";
+
+/* Font */
+function pick(sel,el){ document.querySelectorAll(sel).forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+function setFont(el){ pick('[data-font]',el); document.body.className=el.dataset.font; }
+
+/* Settings */
+function tog(a){ ['settings','set-backdrop'].forEach(id=>document.getElementById(id).classList.toggle('open',a)); }
+function openSettings(){ tog(true); }
+function closeSettings(){ tog(false); }
+
+/* Fetch zones.json fresh */
+async function fetchZones(){
+  try{
+    const r = await fetch('https://api.github.com/repos/freebuisness/assets/commits?per_page=1&t='+Date.now());
+    if(r.ok){
+      const j = await r.json();
+      const sha = j[0]?.sha;
+      if(sha){
+        const r2 = await fetch(`https://cdn.jsdelivr.net/gh/freebuisness/assets@${sha}/zones.json?t=`+Date.now());
+        if(r2.ok) return r2.json();
+      }
+    }
+  }catch(_){}
+  const r3 = await fetch(ZONES_URL+'?t='+Date.now());
+  if(!r3.ok) throw new Error('zones '+r3.status);
+  return r3.json();
+}
+
+/* Build a card */
+function mkCard(item){
+  const div = document.createElement('div');
+  div.className = 'game-card';
+  const imgSrc = item.cover
+    .replace("{COVER_URL}",COVERS_BASE)
+    .replace("{HTML_URL}",HTML_BASE);
+  div.innerHTML = `
+    <div class="img-box">
+      <img src="${imgSrc}" loading="lazy" alt="${item.name}" onerror="this.style.opacity='.25'">
+      <div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>
+    <div class="title-bar"><div class="card-dot"></div><div class="game-name">${item.name}</div></div>`;
+  div.onclick = ()=>openGame(item);
+  return div;
+}
+
+/* Render all cards */
+function draw(data){
+  const area = document.getElementById('games-area');
+  area.innerHTML = '';
+  const featured = data.filter(g=>g.featured);
+  const rest     = data.filter(g=>!g.featured);
+
+  if(featured.length){
+    const h = document.createElement('div'); h.className='section-head';
+    h.innerHTML='<span class="section-label">Top Picks</span><div class="section-line"></div>';
+    area.appendChild(h);
+    const fg=document.createElement('div'); fg.id='featured'; fg.className='grid';
+    featured.forEach(i=>fg.appendChild(mkCard(i)));
+    area.appendChild(fg);
+  }
+
+  const h2=document.createElement('div'); h2.className='section-head';
+  h2.innerHTML='<span class="section-label">All Games</span><div class="section-line"></div>';
+  area.appendChild(h2);
+  const mg=document.createElement('div'); mg.id='main-grid'; mg.className='grid';
+  if(rest.length){
+    rest.forEach(i=>mg.appendChild(mkCard(i)));
+  } else if(!featured.length){
+    mg.innerHTML='<div class="error-wrap"><h3>No games found</h3><p>Try refreshing the page.</p></div>';
+  }
+  area.appendChild(mg);
+}
+
+/* Init */
+async function init(){
+  document.getElementById('games-area').innerHTML=
+    '<div class="loading-wrap"><div class="spinner"></div><span>Loading Games...</span></div>';
+  try{
+    games = await fetchZones();
+    if(!Array.isArray(games)||!games.length) throw new Error('empty');
+    draw(games);
+  }catch(e){
+    console.error('init:',e);
+    document.getElementById('games-area').innerHTML=
+      '<div class="error-wrap"><h3>Could not load games</h3><p>Check your connection and try again.</p><br><button class="retry-btn" onclick="init()">Retry</button></div>';
+  }
+}
+
+function filter(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  if(!games.length) return;
+  draw(q ? games.filter(g=>g.name.toLowerCase().includes(q)) : games);
+}
+
+/* Open a game */
+function resetFrame(){
+  const wrap=document.querySelector('.gframe-wrap');
+  const old=document.getElementById('gameFrame');
+  if(old) old.remove();
+  const f=document.createElement('iframe');
+  f.id='gameFrame'; f.allowFullscreen=true;
+  f.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock');
+  f.style.cssText='flex:1;border:none;width:100%;height:100%;display:block;background:#fff';
+  wrap.appendChild(f);
+  return f;
+}
+
+async function openGame(item){
+  curItem=item; curName=item.name;
+  curURL=item.url.replace("{COVER_URL}",COVERS_BASE).replace("{HTML_URL}",HTML_BASE);
+  curHTML='';
+
+  document.getElementById('display-name').innerText=item.name;
+
+  const gv=document.getElementById('game-view');
+  gv.classList.remove('closing','opening');
+  gv.style.display='flex';
+  void gv.offsetWidth;
+  gv.classList.add('opening');
+  document.body.style.overflow='hidden';
+
+  const f=resetFrame();
+
+  try{
+    const res=await fetch(curURL+'?t='+Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const html=await res.text();
+    curHTML=html;
+    f.contentDocument.open();
+    f.contentDocument.write(html);
+    f.contentDocument.close();
+  }catch(e){
+    console.warn('Direct write failed, using src fallback:',e);
+    // Fallback: let the browser load it via src (works for cross-origin)
+    f.src=curURL;
+  }
+}
+
+function openInTab(){
+  const w=window.open('about:blank','_blank');
+  if(!w){ alert('Allow popups!'); return; }
+  if(curHTML){
+    w.document.open(); w.document.write(curHTML); w.document.close();
+  } else if(curURL){
+    fetch(curURL+'?t='+Date.now())
+      .then(r=>r.text())
+      .then(html=>{ w.document.open(); w.document.write(html); w.document.close(); })
+      .catch(()=>{ w.location.href=curURL; });
+  }
+}
+
+function closeGame(){
+  const gv=document.getElementById('game-view');
+  gv.classList.add('closing');
+  gv.addEventListener('animationend',()=>{
+    gv.style.display='none';
+    gv.classList.remove('closing');
+    resetFrame();
+    document.body.style.overflow='auto';
+    curName=''; curItem=null; curURL=''; curHTML='';
+  },{once:true});
+}
+
+/* Download */
+async function downloadGame(){
+  const b=document.getElementById('dl-btn');
+  b.style.opacity='.5';
+  try{
+    let html=curHTML;
+    if(!html&&curURL){
+      const res=await fetch(curURL+'?t='+Date.now());
+      html=await res.text(); curHTML=html;
+    }
+    if(html){
+      const blob=new Blob([html],{type:'text/html'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=(curName.replace(/\s+/g,'_')||'game')+'.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+      showToast();
+    }
+  }catch(e){ console.error('download:',e); }
+  b.style.opacity='';
+}
+
+function showToast(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function toggleFS(){
+  const f=document.getElementById('gameFrame');
+  const req=f.requestFullscreen||f.webkitRequestFullscreen;
+  if(req) req.call(f);
+}
+
+/* New games poll */
+function dismissBanner(){ document.getElementById('new-banner').classList.remove('show'); }
+async function reloadGames(){
+  dismissBanner();
+  try{
+    games=await fetchZones();
+    const q=document.getElementById('search').value.toLowerCase().trim();
+    draw(q?games.filter(g=>g.name.toLowerCase().includes(q)):games);
+  }catch(e){ console.error(e); }
+}
+
+setInterval(async()=>{
+  try{
+    const fresh=await fetchZones();
+    const known=new Set(games.map(g=>g.name));
+    const newOnes=fresh.filter(g=>!known.has(g.name));
+    if(!newOnes.length) return;
+    games=fresh;
+    const n=newOnes.length;
+    document.getElementById('nb-msg').textContent=
+      `${n} new game${n>1?'s':''} added — ${newOnes.map(g=>g.name).join(', ')}`;
+    document.getElementById('new-banner').classList.add('show');
+    setTimeout(dismissBanner,8000);
+  }catch(_){}
+},30000);
+
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeGame(); });
+init();
+</script>
+</body>
+</html>
