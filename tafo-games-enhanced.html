@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tafo Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#8b0000;--pd:#5a0000;--ps:rgba(139,0,0,.18);--pb:rgba(139,0,0,.45);
+  --bg:#0a0000;--s:#120000;--s2:#1a0000;--b:rgba(139,0,0,.22);
+  --t:#e8d5d5;--m:#9a7575;--card:#100000;
+  --accent:#cc1111;--grey:#3a3a3a;--lgrey:#555;
+  --white:#e8e8e8;
+}
+body{color:var(--t);min-height:100vh;overflow-x:hidden;background:var(--bg);font-family:'Rajdhani',sans-serif;background-image:radial-gradient(ellipse at 20% 0%,rgba(100,0,0,.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(80,0,0,.1) 0%,transparent 60%)}
+body.font-orbitron{font-family:'Orbitron',sans-serif!important}
+body.font-inter{font-family:'Inter',sans-serif!important}
+body.font-grotesk{font-family:'Space Grotesk',sans-serif!important}
+body.font-rajdhani{font-family:'Rajdhani',sans-serif!important}
+body.font-mono{font-family:'Share Tech Mono',monospace!important}
+
+#app{display:block;position:relative;z-index:1}
+header{padding:0 18px;height:54px;background:rgba(8,0,0,.97);backdrop-filter:blur(18px);border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:10px;box-shadow:0 2px 20px rgba(139,0,0,.15)}
+.logo{font-size:20px;font-weight:900;letter-spacing:3px;color:#fff;flex-shrink:0;text-shadow:0 0 22px rgba(180,0,0,.6);font-family:'Orbitron',sans-serif}
+.logo span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:8px}
+#search{background:var(--s2);border:1px solid var(--b);color:var(--t);padding:7px 14px;border-radius:6px;outline:none;width:160px;font-size:13px;transition:.2s;font-family:inherit;cursor:text}
+#search:focus{border-color:var(--pb);width:200px;box-shadow:0 0 12px rgba(139,0,0,.2)}
+#search::placeholder{color:rgba(139,0,0,.4)}
+.icon-btn{background:var(--s2);border:1px solid var(--b);width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;cursor:pointer}
+.icon-btn:hover{background:var(--ps);border-color:var(--pb)}
+.icon-btn svg{width:16px;height:16px;fill:rgba(180,0,0,.6);transition:.2s}
+.icon-btn:hover svg{fill:var(--accent)}
+
+/* SECRET DOT */
+#secret-dot{width:7px;height:7px;border-radius:50%;background:#2a2a2a;border:1px solid #333;cursor:pointer;transition:all .3s;flex-shrink:0;opacity:.45}
+#secret-dot:hover{opacity:.7;background:#3a3a3a}
+#secret-dot.unlocked{background:rgba(139,0,0,.6);border-color:var(--accent);box-shadow:0 0 6px rgba(180,0,0,.5);opacity:1}
+
+/* CODE INPUT MODAL */
+#code-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99998;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#code-modal.show{display:flex}
+.code-box{background:#0e0000;border:1px solid var(--b);border-radius:10px;padding:28px 32px;width:280px;text-align:center;box-shadow:0 0 40px rgba(100,0,0,.3)}
+.code-box h3{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:4px;color:var(--accent);margin-bottom:18px;text-transform:uppercase}
+#code-input{background:#1a0000;border:1px solid var(--b);color:var(--t);padding:10px 14px;border-radius:6px;font-size:20px;font-family:'Share Tech Mono',monospace;letter-spacing:6px;text-align:center;width:100%;outline:none;margin-bottom:14px}
+#code-input:focus{border-color:var(--accent);box-shadow:0 0 10px rgba(180,0,0,.2)}
+.code-submit{background:var(--ps);border:1px solid var(--pb);color:var(--accent);padding:9px 24px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;width:100%;font-family:inherit;transition:.2s}
+.code-submit:hover{background:var(--pd);color:#fff}
+.code-cancel{background:none;border:none;color:var(--m);font-size:11px;margin-top:10px;cursor:pointer;letter-spacing:1px;display:block;width:100%;text-align:center}
+#code-error{color:#ff4444;font-size:11px;margin-top:6px;min-height:16px;letter-spacing:1px}
+
+/* SETTINGS */
+#settings{position:fixed;top:0;right:-340px;width:320px;height:100vh;background:#0b0000;border-left:1px solid var(--b);z-index:5000;transition:right .3s ease-out;overflow-y:auto;padding:20px;scrollbar-width:thin;scrollbar-color:var(--b) transparent}
+#settings.open{right:0}
+.settings-title{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--pb);margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;font-family:'Orbitron',sans-serif}
+.settings-title button{background:none;border:none;color:rgba(180,0,0,.45);font-size:16px;line-height:1;cursor:pointer}
+.settings-title button:hover{color:var(--accent)}
+.set-section{margin-bottom:20px;border-bottom:1px solid rgba(139,0,0,.1);padding-bottom:20px}
+.set-section:last-child{border-bottom:none}
+.set-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(180,0,0,.5);margin-bottom:8px;font-family:'Share Tech Mono',monospace}
+.set-options{display:flex;flex-wrap:wrap;gap:5px}
+.set-opt{padding:6px 11px;border-radius:4px;border:1px solid var(--b);background:transparent;font-size:12px;font-weight:600;color:rgba(180,0,0,.55);transition:.2s;cursor:pointer;font-family:inherit}
+.set-opt:hover{border-color:var(--pb);color:var(--accent)}
+.set-opt.active{border-color:var(--accent);background:var(--ps);color:var(--accent)}
+#set-backdrop{position:fixed;inset:0;z-index:4999;display:none}
+#set-backdrop.open{display:block}
+
+/* MOD MENU */
+#mod-menu{position:fixed;top:0;left:-380px;width:360px;height:100vh;background:linear-gradient(160deg,#0a0000 0%,#050000 100%);border-right:1px solid rgba(139,0,0,.35);z-index:6000;transition:left .3s ease-out;overflow-y:auto;padding:20px;scrollbar-width:thin;scrollbar-color:var(--b) transparent;box-shadow:4px 0 30px rgba(0,0,0,.6)}
+#mod-menu.open{left:0}
+.mod-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mod-skull{font-size:20px}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;letter-spacing:3px;color:var(--accent);text-transform:uppercase}
+.mod-sub{font-size:10px;color:var(--m);letter-spacing:2px;margin-bottom:22px;font-family:'Share Tech Mono',monospace}
+.mod-close{position:absolute;top:18px;right:18px;background:none;border:none;color:rgba(180,0,0,.4);font-size:18px;cursor:pointer;transition:.2s}
+.mod-close:hover{color:var(--accent)}
+.mod-section-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(180,0,0,.4);margin:18px 0 10px;font-family:'Share Tech Mono',monospace;border-bottom:1px solid rgba(139,0,0,.15);padding-bottom:6px}
+.mod-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:10px 12px;background:rgba(139,0,0,.05);border:1px solid rgba(139,0,0,.12);border-radius:6px;transition:.2s}
+.mod-row:hover{background:rgba(139,0,0,.1);border-color:rgba(139,0,0,.25)}
+.mod-row-label{font-size:13px;font-weight:600;color:var(--t);letter-spacing:.5px}
+.mod-row-desc{font-size:10px;color:var(--m);letter-spacing:.5px;margin-top:2px}
+/* Toggle */
+.toggle{width:38px;height:20px;background:#1a0000;border:1px solid var(--b);border-radius:10px;position:relative;cursor:pointer;transition:.3s;flex-shrink:0}
+.toggle.on{background:rgba(139,0,0,.4);border-color:var(--accent);box-shadow:0 0 8px rgba(180,0,0,.3)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#555;border-radius:50%;top:2px;left:2px;transition:.3s}
+.toggle.on::after{left:20px;background:var(--accent);box-shadow:0 0 6px rgba(180,0,0,.6)}
+/* Select */
+.mod-select{background:#1a0000;border:1px solid var(--b);color:var(--t);padding:5px 9px;border-radius:4px;font-size:11px;font-family:inherit;outline:none;cursor:pointer;transition:.2s}
+.mod-select:focus{border-color:var(--accent)}
+/* Color picker row */
+.mod-color-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.mod-color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--b);cursor:pointer;overflow:hidden;position:relative}
+.mod-color-swatch input[type=color]{position:absolute;inset:-4px;width:calc(100%+8px);height:calc(100%+8px);opacity:0;cursor:pointer}
+.color-label{font-size:10px;color:var(--m);letter-spacing:1px}
+/* Keybind slot */
+.keybind-slot{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:8px 10px;background:rgba(20,0,0,.6);border:1px solid rgba(139,0,0,.15);border-radius:5px}
+.kb-label{font-size:11px;color:var(--m);letter-spacing:1px;width:70px}
+.kb-key-btn{background:#1a0000;border:1px solid var(--b);color:var(--t);padding:5px 10px;border-radius:4px;font-size:12px;font-family:'Share Tech Mono',monospace;min-width:44px;text-align:center;cursor:pointer;transition:.2s;letter-spacing:1px}
+.kb-key-btn:hover{border-color:var(--accent);color:var(--accent)}
+.kb-key-btn.listening{border-color:#ffaa00;color:#ffaa00;animation:kbPulse .8s infinite}
+@keyframes kbPulse{0%,100%{box-shadow:0 0 4px rgba(255,170,0,.3)}50%{box-shadow:0 0 10px rgba(255,170,0,.6)}}
+/* Slider */
+.mod-slider{-webkit-appearance:none;width:100%;height:3px;background:rgba(139,0,0,.3);border-radius:2px;outline:none;margin-top:8px;cursor:pointer}
+.mod-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 6px rgba(180,0,0,.5)}
+.slider-val{font-size:11px;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:30px;text-align:right}
+
+/* GRID */
+.container{padding:14px}
+.section-head{display:flex;align-items:center;gap:10px;margin:18px 0 10px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(180,0,0,.5);font-family:'Share Tech Mono',monospace}
+.section-line{flex:1;height:1px;background:linear-gradient(to right,var(--b),transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:8px}
+#featured{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.game-card{position:relative;border-radius:8px;overflow:hidden;transition:transform .25s,box-shadow .25s;border:1px solid rgba(139,0,0,.25);background:var(--card);cursor:pointer;contain:layout style}
+.game-card:hover{transform:translateY(-4px);border-color:rgba(180,0,0,.6);box-shadow:0 8px 28px rgba(139,0,0,.25)}
+.img-box{width:100%;aspect-ratio:4/3;overflow:hidden;position:relative;background:#0c0000}
+.game-card img{width:100%;height:100%;object-fit:cover;transition:.4s;display:block}
+.game-card:hover img{transform:scale(1.06)}
+.img-box::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(8,0,0,.88) 0%,transparent 55%);pointer-events:none}
+.play-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.65);width:42px;height:42px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;z-index:3;box-shadow:0 0 24px rgba(180,0,0,.7)}
+.play-badge svg{width:15px;height:15px;fill:#fff;margin-left:3px}
+.game-card:hover .play-badge{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.title-bar{padding:9px 11px;background:var(--card);border-top:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.card-dot{width:5px;height:5px;border-radius:50%;background:rgba(139,0,0,.3);flex-shrink:0;transition:.2s}
+.game-card:hover .card-dot{background:var(--accent);box-shadow:0 0 6px rgba(180,0,0,.7)}
+.game-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize;color:var(--m);transition:.2s;font-family:inherit}
+.game-card:hover .game-name{color:var(--t)}
+
+/* FPS COUNTER */
+#fps-counter{position:fixed;top:60px;left:10px;background:rgba(0,0,0,.75);border:1px solid rgba(139,0,0,.4);color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 9px;border-radius:4px;z-index:99997;display:none;letter-spacing:1px;pointer-events:none;user-select:none;backdrop-filter:blur(4px)}
+#fps-counter.show{display:block}
+#fps-val{font-size:14px;font-weight:bold}
+
+/* KEYBINDS OVERLAY */
+#kb-overlay{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:none;gap:8px;z-index:99996;pointer-events:auto;align-items:flex-end;padding:10px 14px;background:rgba(4,0,0,.55);border:1px solid rgba(139,0,0,.2);border-radius:10px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,.6)}
+#kb-overlay.show{display:flex}
+
+/* Realistic keycap */
+.kb-key{
+  position:relative;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-width:54px;
+  height:50px;
+  padding:0 10px;
+  cursor:pointer;
+  user-select:none;
+  /* outer shell — the "wall" of the key */
+  background:linear-gradient(180deg,#1c0000 0%,#0e0000 100%);
+  border-radius:7px;
+  /* the bottom raised edge that gives 3D depth */
+  box-shadow:
+    0 6px 0 0 #050000,
+    0 7px 0 0 rgba(139,0,0,.5),
+    0 0 0 1px rgba(139,0,0,.3),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  transition:box-shadow .08s ease, transform .08s ease, top .08s ease;
+  top:0;
+}
+/* inner keycap face */
+.kb-key::before{
+  content:'';
+  position:absolute;
+  inset:3px 3px 5px 3px;
+  border-radius:4px;
+  background:linear-gradient(160deg,#2a0000 0%,#180000 60%,#100000 100%);
+  border-top:1px solid rgba(255,255,255,.08);
+  border-left:1px solid rgba(255,255,255,.05);
+  border-right:1px solid rgba(0,0,0,.4);
+  border-bottom:1px solid rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.5);
+  z-index:0;
+}
+/* colored glow outline using the user-chosen color */
+.kb-key{
+  outline:2px solid var(--kb-color,#8b0000);
+  outline-offset:-1px;
+}
+
+.kb-key .kb-key-inner{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+}
+.kb-key-char{
+  font-family:'Share Tech Mono',monospace;
+  font-size:16px;
+  font-weight:bold;
+  color:#e8d5d5;
+  letter-spacing:1px;
+  line-height:1;
+  text-shadow:0 0 8px var(--kb-color,#8b0000), 0 1px 0 rgba(0,0,0,.8);
+  transition:text-shadow .08s;
+}
+
+
+/* pressed / active state — key travels down */
+.kb-key:active,
+.kb-key.pressed{
+  top:4px;
+  box-shadow:
+    0 2px 0 0 #050000,
+    0 3px 0 0 rgba(139,0,0,.5),
+    0 0 0 1px rgba(139,0,0,.3),
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 0 18px 2px var(--kb-color,#8b0000);
+  outline-color:var(--kb-color,#8b0000);
+}
+.kb-key:active::before,
+.kb-key.pressed::before{
+  background:linear-gradient(160deg,#3a0000 0%,#200000 60%,#160000 100%);
+}
+.kb-key:active .kb-key-char,
+.kb-key.pressed .kb-key-char{
+  text-shadow:0 0 14px var(--kb-color,#8b0000), 0 0 4px #fff;
+}
+
+/* hover lift */
+.kb-key:hover:not(.pressed):not(:active){
+  box-shadow:
+    0 8px 0 0 #050000,
+    0 9px 0 0 rgba(139,0,0,.6),
+    0 0 0 1px rgba(139,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 12px 1px rgba(139,0,0,.25);
+  top:-1px;
+}
+
+/* CLICK RIPPLE */
+.click-ripple{position:fixed;width:12px;height:12px;border-radius:50%;background:rgba(139,0,0,.5);pointer-events:none;z-index:99999;transform:translate(-50%,-50%) scale(0);animation:rippleOut .35s ease-out forwards}
+@keyframes rippleOut{to{transform:translate(-50%,-50%) scale(3);opacity:0}}
+
+/* LOADING / ERROR */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 20px;color:var(--m);font-size:12px;letter-spacing:3px;text-transform:uppercase}
+.spinner{width:32px;height:32px;border:2px solid var(--b);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shakeFrame{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.error-wrap{text-align:center;padding:80px 20px;color:var(--m)}
+.error-wrap h3{color:var(--t);margin-bottom:8px;font-size:15px}
+.retry-btn{margin-top:14px;background:var(--ps);border:1px solid var(--pb);color:var(--accent);padding:8px 20px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.retry-btn:hover{background:var(--pd);color:#fff}
+
+/* GAME VIEW */
+#game-view{position:fixed;inset:0;background:#060000;z-index:10000;display:none;flex-direction:column;height:100vh;width:100vw}
+@keyframes gvOpen{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes gvClose{0%{opacity:1;transform:scale(1)}50%{opacity:.8;transform:scale(1.01)}100%{opacity:0;transform:scale(.92)}}
+#game-view.opening{animation:gvOpen .2s ease-out forwards}
+#game-view.closing{animation:gvClose .28s ease-in forwards}
+.top-nav{padding:0 16px;height:50px;background:rgba(4,0,0,.98);border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;box-shadow:0 2px 12px rgba(139,0,0,.15)}
+#display-name{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:2px;color:rgba(180,0,0,.7);font-family:'Orbitron',sans-serif;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-btns{display:flex;gap:8px;align-items:center}
+.nav-btn{background:var(--s2);border:1px solid var(--b);width:36px;height:36px;border-radius:6px;transition:.2s;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.nav-btn:hover{background:var(--ps);border-color:var(--pb)}
+.nav-btn svg{width:16px;height:16px;fill:rgba(180,0,0,.55);transition:.2s}
+.nav-btn:hover svg{fill:var(--accent)}
+.tab-btn{background:var(--s2);border:1px solid var(--b);height:36px;padding:0 12px;border-radius:6px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(180,0,0,.6);transition:.2s;white-space:nowrap;cursor:pointer;font-family:inherit}
+.tab-btn:hover{background:var(--ps);border-color:var(--pb);color:var(--accent)}
+.tab-btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.close-btn{width:36px;height:36px;border-radius:6px;background:var(--s2);border:1px solid rgba(255,60,60,.2);display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer}
+.close-btn:hover{background:rgba(180,0,0,.15);border-color:rgba(255,60,60,.5);box-shadow:0 0 12px rgba(180,0,0,.3)}
+.close-x{width:14px;height:14px;position:relative}
+.close-x::before,.close-x::after{content:'';position:absolute;width:100%;height:1.5px;background:rgba(255,100,100,.7);top:50%;left:0;border-radius:1px;transition:.2s}
+.close-x::before{transform:translateY(-50%) rotate(45deg)}
+.close-x::after{transform:translateY(-50%) rotate(-45deg)}
+.close-btn:hover .close-x::before,.close-btn:hover .close-x::after{background:#ff4444}
+.gframe-wrap{position:relative;flex:1;display:flex;min-height:0;overflow:hidden}
+#gameFrame{flex:1;border:none;width:100%;height:100%;display:block;background:#fff}
+.gframe-wrap::before{content:'';position:absolute;inset:0;border:1px solid rgba(139,0,0,.4);box-shadow:0 0 40px rgba(139,0,0,.12),inset 0 0 20px rgba(139,0,0,.03);pointer-events:none;z-index:2;border-radius:2px}
+
+/* FPS in game overlay */
+#fps-in-game{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);border:1px solid rgba(139,0,0,.5);color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 9px;border-radius:4px;z-index:15;letter-spacing:1px;pointer-events:none;display:none}
+#fps-in-game.show{display:block}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#0e0000;border:1px solid var(--b);color:var(--t);padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:99999;display:flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 24px rgba(139,0,0,.2)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast svg{width:14px;height:14px;fill:var(--accent);flex-shrink:0}
+#new-banner{position:fixed;top:62px;left:50%;transform:translateX(-50%) translateY(-80px);background:#0e0000;border:1px solid var(--b);color:var(--t);padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transition:all .35s ease-out;pointer-events:none;z-index:99999;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(139,0,0,.18)}
+#new-banner.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#new-banner button{background:var(--ps);border:1px solid var(--b);color:var(--accent);padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:.2s;cursor:pointer}
+#new-banner button:hover{background:var(--pd);color:#fff}
+.nb-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:nbp 1.2s ease infinite;box-shadow:0 0 6px var(--accent)}
+@keyframes nbp{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(139,0,0,.3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(180,0,0,.5)}
+</style>
+</head>
+<body class="font-rajdhani">
+
+<!-- FPS COUNTER (outside game) -->
+<div id="fps-counter"><span id="fps-val">--</span> FPS</div>
+
+<!-- KEYBINDS OVERLAY -->
+<div id="kb-overlay">
+  <div class="kb-key" id="kbk-0" onclick="triggerKB(0)">
+    <div class="kb-key-inner">
+      <span class="kb-key-char" id="kb-key-label-0">Q</span>
+    </div>
+  </div>
+  <div class="kb-key" id="kbk-1" onclick="triggerKB(1)">
+    <div class="kb-key-inner">
+      <span class="kb-key-char" id="kb-key-label-1">E</span>
+    </div>
+  </div>
+  <div class="kb-key" id="kbk-2" onclick="triggerKB(2)">
+    <div class="kb-key-inner">
+      <span class="kb-key-char" id="kb-key-label-2">F</span>
+    </div>
+  </div>
+  <div class="kb-key" id="kbk-3" onclick="triggerKB(3)">
+    <div class="kb-key-inner">
+      <span class="kb-key-char" id="kb-key-label-3">C</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="logo">TAFO<span>.</span>GAMES</div>
+    <div class="header-right">
+      <div id="secret-dot" title="" onclick="showCodeModal()"></div>
+      <input type="text" id="search" placeholder="Search games..." oninput="filter()">
+      <button class="icon-btn" onclick="openSettings()" title="Settings">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.02 7.02 0 00-1.62-.94l-.36-2.54A.484.484 0 0014 2h-4a.484.484 0 00-.48.41l-.36 2.54a7.38 7.38 0 00-1.62.94l-2.39-.96a.48.48 0 00-.59.22L2.74 8.47a.47.47 0 00.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.36 1.04.67 1.62.94l.36 2.54c.05.24.27.41.49.41h4c.22 0 .43-.17.47-.41l.36-2.54a7.38 7.38 0 001.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 00-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="container">
+    <div id="games-area">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <span>Loading Games...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME VIEW -->
+<div id="game-view">
+  <div class="top-nav">
+    <span id="display-name"></span>
+    <div class="nav-btns">
+      <button class="nav-btn" id="dl-btn" onclick="downloadGame()" title="Download HTML">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      </button>
+      <button class="nav-btn" onclick="toggleFS()" title="Fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <button class="tab-btn" onclick="openInTab()">
+        <svg viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M11 3h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17 3L10.5 9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        New Tab
+      </button>
+      <button class="close-btn" onclick="closeGame()" title="Close"><div class="close-x"></div></button>
+    </div>
+  </div>
+  <div class="gframe-wrap">
+    <div id="fps-in-game">-- FPS</div>
+    <iframe id="gameFrame" allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock"></iframe>
+  </div>
+</div>
+
+<!-- CODE MODAL -->
+<div id="code-modal">
+  <div class="code-box">
+    <h3>⌨ Enter Code</h3>
+    <input type="password" id="code-input" maxlength="4" placeholder="••••" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+    <div id="code-error"></div>
+    <button class="code-submit" onclick="submitCode()">Unlock</button>
+    <button class="code-cancel" onclick="hideCodeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="set-backdrop" onclick="closeSettings()"></div>
+<div id="settings">
+  <div class="settings-title">
+    ⚙ SETTINGS
+    <button onclick="closeSettings()">✕</button>
+  </div>
+  <div class="set-section">
+    <div class="set-label">Font</div>
+    <div class="set-options">
+      <div class="set-opt active" data-font="font-rajdhani" onclick="setFont(this)">Rajdhani</div>
+      <div class="set-opt" data-font="font-orbitron" onclick="setFont(this)">Orbitron</div>
+      <div class="set-opt" data-font="font-inter" onclick="setFont(this)">Inter</div>
+      <div class="set-opt" data-font="font-grotesk" onclick="setFont(this)">Grotesk</div>
+      <div class="set-opt" data-font="font-mono" onclick="setFont(this)">Mono</div>
+    </div>
+  </div>
+  <div class="set-section">
+    <div class="set-label">Grid Size</div>
+    <div class="set-options">
+      <div class="set-opt active" data-grid="140" onclick="setGrid(this)">Small</div>
+      <div class="set-opt" data-grid="180" onclick="setGrid(this)">Medium</div>
+      <div class="set-opt" data-grid="220" onclick="setGrid(this)">Large</div>
+    </div>
+  </div>
+  <div class="set-section">
+    <div class="set-label">FPS Display</div>
+    <div class="set-options">
+      <div class="set-opt" onclick="toggleFPS()">Toggle FPS Counter</div>
+    </div>
+  </div>
+  <div class="set-section">
+    <div class="set-label">Card Animation</div>
+    <div class="set-options">
+      <div class="set-opt active" data-anim="on" onclick="setAnim(this)">On</div>
+      <div class="set-opt" data-anim="off" onclick="setAnim(this)">Off</div>
+    </div>
+  </div>
+</div>
+
+<!-- MOD MENU -->
+<div id="mod-menu">
+  <button class="mod-close" onclick="closeModMenu()">✕</button>
+  <div class="mod-header">
+    <span class="mod-skull">💀</span>
+    <div>
+      <div class="mod-title">Mod Menu</div>
+      <div class="mod-sub">TAFO GAMES // UNLOCKED</div>
+    </div>
+  </div>
+
+  <div class="mod-section-title">🔊 Audio</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Click Sounds</div>
+      <div class="mod-row-desc">Creamy keyboard noise on clicks</div>
+    </div>
+    <div class="toggle" id="tog-click" onclick="toggleMod('clickSounds',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">Sound Style</div>
+        <div class="mod-row-desc">Choose your click sound</div>
+      </div>
+      <select class="mod-select" onchange="setClickStyle(this.value)">
+        <option value="cream">Creamy</option>
+        <option value="thock">Thocky</option>
+        <option value="clack">Clacky</option>
+        <option value="silent">Soft</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;width:100%">
+      <span style="font-size:10px;color:var(--m);letter-spacing:1px">Volume</span>
+      <input type="range" class="mod-slider" min="0" max="100" value="60" oninput="setClickVol(this.value);document.getElementById('click-vol-val').textContent=this.value" style="flex:1">
+      <span class="slider-val" id="click-vol-val">60</span>
+    </div>
+  </div>
+
+  <div class="mod-section-title">⌨ Key Binds Overlay</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Key Binds Overlay</div>
+      <div class="mod-row-desc">Show 4-key row when in game</div>
+    </div>
+    <div class="toggle" id="tog-kb" onclick="toggleMod('kbOverlay',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+    <div class="mod-row-label" style="margin-bottom:2px">Key Binds</div>
+    <div id="kb-edit-slots" style="width:100%"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+    <div class="mod-row-label">Outline Color</div>
+    <div class="mod-color-row">
+      <div class="mod-color-swatch" id="kb-color-swatch" style="background:#8b0000">
+        <input type="color" value="#8b0000" oninput="setKBColor(this.value)">
+      </div>
+      <div id="kb-color-presets" style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="width:20px;height:20px;border-radius:3px;background:#8b0000;cursor:pointer;border:1px solid #555" onclick="setKBColor('#8b0000')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#00ff41;cursor:pointer;border:1px solid #555" onclick="setKBColor('#00ff41')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#00bfff;cursor:pointer;border:1px solid #555" onclick="setKBColor('#00bfff')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#ff6600;cursor:pointer;border:1px solid #555" onclick="setKBColor('#ff6600')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#cc00ff;cursor:pointer;border:1px solid #555" onclick="setKBColor('#cc00ff')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#ffffff;cursor:pointer;border:1px solid #555" onclick="setKBColor('#ffffff')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">KB Click Sounds</div>
+      <div class="mod-row-desc">Sound when hitting overlay keys</div>
+    </div>
+    <div class="toggle on" id="tog-kb-sound" onclick="toggleMod('kbSound',this)"></div>
+  </div>
+
+  <div class="mod-section-title">🎮 Gaming</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">FPS Counter</div>
+      <div class="mod-row-desc">Show frames per second in game</div>
+    </div>
+    <div class="toggle" id="tog-fps" onclick="toggleMod('fps',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Crosshair</div>
+      <div class="mod-row-desc">Overlay crosshair in game</div>
+    </div>
+    <div class="toggle" id="tog-xhair" onclick="toggleMod('crosshair',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start;gap:4px">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div class="mod-row-label">Crosshair Style</div>
+      <select class="mod-select" onchange="setCrosshairStyle(this.value)">
+        <option value="cross">Cross</option>
+        <option value="dot">Dot</option>
+        <option value="circle">Circle</option>
+        <option value="t">T-Shape</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Click Ripple FX</div>
+      <div class="mod-row-desc">Visual ripple on every click</div>
+    </div>
+    <div class="toggle on" id="tog-ripple" onclick="toggleMod('ripple',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Aim Trainer Mode</div>
+      <div class="mod-row-desc">Hide cursor trail for cleaner aim</div>
+    </div>
+    <div class="toggle" id="tog-aim" onclick="toggleMod('aimMode',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">Page Zoom</div>
+        <div class="mod-row-desc">Zoom the game iframe</div>
+      </div>
+      <span class="slider-val" id="zoom-val">100%</span>
+    </div>
+    <input type="range" class="mod-slider" min="50" max="150" value="100" oninput="setZoom(this.value)">
+  </div>
+
+  <div class="mod-section-title">🖥 Display</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Dark Frame Border</div>
+      <div class="mod-row-desc">Extra dark border around game</div>
+    </div>
+    <div class="toggle on" id="tog-border" onclick="toggleMod('darkBorder',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Low Motion Mode</div>
+      <div class="mod-row-desc">Reduce card animations for perf</div>
+    </div>
+    <div class="toggle" id="tog-lowmotion" onclick="toggleMod('lowMotion',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">UI Brightness</div>
+        <div class="mod-row-desc">Adjust interface brightness</div>
+      </div>
+      <span class="slider-val" id="bright-val">100%</span>
+    </div>
+    <input type="range" class="mod-slider" min="50" max="130" value="100" oninput="setBrightness(this.value)">
+  </div>
+
+  <div class="mod-section-title">🧰 Tools</div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="openInTab()">
+    <div>
+      <div class="mod-row-label">Open in New Tab</div>
+      <div class="mod-row-desc">Pop current game out</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">↗</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="toggleFS()">
+    <div>
+      <div class="mod-row-label">Force Fullscreen</div>
+      <div class="mod-row-desc">Go fullscreen instantly</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">⛶</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="clearCache()">
+    <div>
+      <div class="mod-row-label">Clear Cache</div>
+      <div class="mod-row-desc">Reload all game data</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">↺</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="copyGameURL()">
+    <div>
+      <div class="mod-row-label">Copy Game URL</div>
+      <div class="mod-row-desc">Copy current game link</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">⎘</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="downloadGame()">
+    <div>
+      <div class="mod-row-label">Download Game</div>
+      <div class="mod-row-desc">Save game as HTML file</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">⬇</span>
+  </div>
+
+  <div class="mod-section-title">🎯 Aim & Mouse</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Custom Cursor</div>
+      <div class="mod-row-desc">Replace cursor with crosshair</div>
+    </div>
+    <div class="toggle" id="tog-cursor" onclick="toggleMod('customCursor',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">Mouse Sensitivity</div>
+        <div class="mod-row-desc">Visual sensitivity scale</div>
+      </div>
+      <span class="slider-val" id="sens-val">1.0x</span>
+    </div>
+    <input type="range" class="mod-slider" min="1" max="30" value="10" oninput="setSens(this.value)">
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Click Counter</div>
+      <div class="mod-row-desc">Track your total clicks</div>
+    </div>
+    <span class="slider-val" id="click-count-val" style="min-width:auto">0</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="resetClickCount()">
+    <div>
+      <div class="mod-row-label">Reset Click Count</div>
+      <div class="mod-row-desc">Zero out the counter</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">✕</span>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">CPS Meter</div>
+      <div class="mod-row-desc">Show clicks per second live</div>
+    </div>
+    <div class="toggle" id="tog-cps" onclick="toggleMod('cpsMeter',this)"></div>
+  </div>
+
+  <div class="mod-section-title">🌈 Visual FX</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">RGB Mode</div>
+      <div class="mod-row-desc">Cycle key outline colors</div>
+    </div>
+    <div class="toggle" id="tog-rgb" onclick="toggleMod('rgbMode',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Particle Clicks</div>
+      <div class="mod-row-desc">Burst particles on click</div>
+    </div>
+    <div class="toggle" id="tog-particles" onclick="toggleMod('particles',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">Particle Color</div>
+      </div>
+      <div style="display:flex;gap:5px">
+        <div style="width:20px;height:20px;border-radius:3px;background:#8b0000;cursor:pointer;border:1px solid #555" onclick="setParticleColor('#8b0000')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#00ff41;cursor:pointer;border:1px solid #555" onclick="setParticleColor('#00ff41')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#00bfff;cursor:pointer;border:1px solid #555" onclick="setParticleColor('#00bfff')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#ff6600;cursor:pointer;border:1px solid #555" onclick="setParticleColor('#ff6600')"></div>
+        <div style="width:20px;height:20px;border-radius:3px;background:#ffffff;cursor:pointer;border:1px solid #555" onclick="setParticleColor('#ffffff')"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Screen Shake</div>
+      <div class="mod-row-desc">Shake on heavy clicks</div>
+    </div>
+    <div class="toggle" id="tog-shake" onclick="toggleMod('screenShake',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Vignette</div>
+      <div class="mod-row-desc">Dark edge overlay in game</div>
+    </div>
+    <div class="toggle" id="tog-vignette" onclick="toggleMod('vignette',this)"></div>
+  </div>
+
+  <div class="mod-row" style="flex-direction:column;align-items:flex-start">
+    <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+      <div>
+        <div class="mod-row-label">Game Hue Shift</div>
+        <div class="mod-row-desc">Tint the game iframe</div>
+      </div>
+      <span class="slider-val" id="hue-val">0°</span>
+    </div>
+    <input type="range" class="mod-slider" min="0" max="360" value="0" oninput="setHue(this.value)">
+  </div>
+
+  <div class="mod-section-title">⚡ Performance</div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Hardware Acceleration</div>
+      <div class="mod-row-desc">Force GPU layer on iframe</div>
+    </div>
+    <div class="toggle on" id="tog-hwaccel" onclick="toggleMod('hwAccel',this)"></div>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Image Quality</div>
+      <div class="mod-row-desc">Card thumbnail rendering</div>
+    </div>
+    <select class="mod-select" onchange="setImgQuality(this.value)">
+      <option value="auto">Auto</option>
+      <option value="crisp-edges">Crisp</option>
+      <option value="pixelated">Pixel</option>
+    </select>
+  </div>
+
+  <div class="mod-row">
+    <div>
+      <div class="mod-row-label">Preload Games</div>
+      <div class="mod-row-desc">Warm up on hover</div>
+    </div>
+    <div class="toggle" id="tog-preload" onclick="toggleMod('preload',this)"></div>
+  </div>
+
+  <div class="mod-section-title">📊 Stats</div>
+
+  <div class="mod-row">
+    <div class="mod-row-label">Session Time</div>
+    <span class="slider-val" id="session-time-val" style="min-width:auto;font-size:13px">00:00</span>
+  </div>
+
+  <div class="mod-row">
+    <div class="mod-row-label">Games Opened</div>
+    <span class="slider-val" id="games-opened-val" style="min-width:auto">0</span>
+  </div>
+
+  <div class="mod-row" style="cursor:pointer" onclick="resetStats()">
+    <div>
+      <div class="mod-row-label">Reset Stats</div>
+      <div class="mod-row-desc">Clear session data</div>
+    </div>
+    <span style="color:var(--accent);font-size:16px">↺</span>
+  </div>
+
+</div>
+
+<!-- NEW GAMES BANNER -->
+<div id="new-banner">
+  <div class="nb-dot"></div>
+  <span id="nb-msg"></span>
+  <button onclick="reloadGames()">Refresh</button>
+  <button onclick="dismissBanner()" style="background:none;border:none;font-size:15px;padding:0 2px;color:rgba(180,0,0,.5);cursor:pointer">✕</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+  Downloaded from TafoHub
+</div>
+
+<!-- CROSSHAIR OVERLAY -->
+<canvas id="xhair-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;display:none"></canvas>
+
+<script>
+// ─────────────── CONSTANTS ───────────────
+const COVERS_BASE = "https://cdn.jsdelivr.net/gh/freebuisness/covers@main";
+const HTML_BASE   = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
+const ZONES_URL   = "https://cdn.jsdelivr.net/gh/freebuisness/assets@main/zones.json";
+const SECRET_CODE = "7878";
+
+let games=[], curName="", curItem=null, curURL="", curHTML="";
+
+// ─────────────── MOD STATE ───────────────
+const mods = {
+  clickSounds: false,
+  kbOverlay: false,
+  kbSound: true,
+  fps: false,
+  crosshair: false,
+  ripple: true,
+  aimMode: false,
+  darkBorder: true,
+  lowMotion: false
+};
+
+const kbBinds = [
+  {key:'Q', action:'Reload'},
+  {key:'E', action:'Use'},
+  {key:'F', action:'Flash'},
+  {key:'C', action:'Crouch'}
+];
+
+let kbColor = '#8b0000';
+let clickStyle = 'cream';
+let clickVol = 0.6;
+let listenIdx = -1;
+let audioCtx = null;
+let fpsActive = false;
+let frameCount = 0, lastFPSTime = performance.now();
+let fpsRAF = null;
+let modUnlocked = false;
+
+// ─────────────── AUDIO ENGINE ───────────────
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playKeySound(style, vol){
+  try{
+    const ctx = getAudioCtx();
+    const masterGain = ctx.createGain();
+    masterGain.gain.value = (vol !== undefined ? vol : clickVol);
+    masterGain.connect(ctx.destination);
+
+    if(style === 'cream' || style === undefined){
+      // Creamy: soft attack, warm mid, quick decay
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 3200;
+      filter.Q.value = 0.7;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0.9, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.085);
+      osc.connect(filter); filter.connect(gain); gain.connect(masterGain);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.09);
+      // noise layer
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*0.3;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0.5, ctx.currentTime);
+      ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.04);
+      src.connect(ng); ng.connect(masterGain);
+      src.start(ctx.currentTime);
+    } else if(style === 'thock'){
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+      osc.connect(gain); gain.connect(masterGain);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+    } else if(style === 'clack'){
+      const buf = ctx.createBuffer(1, ctx.sampleRate*0.025, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass'; filter.frequency.value = 2000;
+      gain.gain.setValueAtTime(1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.025);
+      src.connect(filter); filter.connect(gain); gain.connect(masterGain);
+      src.start(ctx.currentTime);
+    } else if(style === 'silent'){
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime+0.05);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.06);
+      osc.connect(gain); gain.connect(masterGain);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.07);
+    }
+  }catch(e){}
+}
+
+// ─────────────── CLICK SOUND ───────────────
+document.addEventListener('mousedown', e=>{
+  if(mods.ripple) spawnRipple(e.clientX, e.clientY);
+  if(mods.clickSounds) playKeySound(clickStyle);
+});
+document.addEventListener('touchstart', e=>{
+  if(mods.ripple && e.touches[0]) spawnRipple(e.touches[0].clientX, e.touches[0].clientY);
+  if(mods.clickSounds) playKeySound(clickStyle);
+},{passive:true});
+
+function spawnRipple(x, y){
+  const r = document.createElement('div');
+  r.className = 'click-ripple';
+  r.style.left = x+'px'; r.style.top = y+'px';
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(), 400);
+}
+
+// ─────────────── FPS COUNTER ───────────────
+function startFPS(){
+  frameCount=0; lastFPSTime=performance.now();
+  function loop(){
+    frameCount++;
+    const now = performance.now();
+    if(now - lastFPSTime >= 500){
+      const fps = Math.round(frameCount / ((now - lastFPSTime) / 1000));
+      frameCount=0; lastFPSTime=now;
+      const v = document.getElementById('fps-val');
+      const ig = document.getElementById('fps-in-game');
+      const col = fps>=50?'#00ff41':fps>=30?'#ffaa00':'#ff4444';
+      if(v){ v.textContent=fps; v.style.color=col; }
+      if(ig){ ig.textContent=fps+' FPS'; ig.style.color=col; }
+    }
+    fpsRAF = requestAnimationFrame(loop);
+  }
+  fpsRAF = requestAnimationFrame(loop);
+}
+function stopFPS(){
+  if(fpsRAF) cancelAnimationFrame(fpsRAF);
+  const v=document.getElementById('fps-val');
+  if(v) v.textContent='--';
+}
+function toggleFPS(){
+  mods.fps = !mods.fps;
+  applyFPS();
+}
+function applyFPS(){
+  const fc = document.getElementById('fps-counter');
+  const ig = document.getElementById('fps-in-game');
+  if(mods.fps){
+    fc.classList.add('show');
+    if(ig) ig.classList.add('show');
+    startFPS();
+  } else {
+    fc.classList.remove('show');
+    if(ig) ig.classList.remove('show');
+    stopFPS();
+  }
+}
+
+// ─────────────── MOD TOGGLES ───────────────
+function toggleMod(key, el){
+  mods[key] = !mods[key];
+  el.classList.toggle('on', mods[key]);
+  if(key==='fps') applyFPS();
+  if(key==='kbOverlay') applyKBOverlay();
+  if(key==='crosshair') applyCrosshair();
+  if(key==='lowMotion') applyLowMotion();
+  if(key==='darkBorder') applyDarkBorder();
+  if(key==='rgbMode'){ if(mods.rgbMode) startRGB(); else stopRGB(); }
+  if(key==='vignette') applyVignette();
+  if(key==='customCursor') applyCustomCursor();
+  if(key==='hwAccel') applyHWAccel();
+  if(key==='cpsMeter'){
+    const bar=document.getElementById('cps-bar');
+    if(bar){ bar.style.display=mods.cpsMeter?'block':'none'; }
+    if(mods.cpsMeter) startCPS(); else stopCPS();
+  }
+  if(mods.clickSounds) playKeySound(clickStyle);
+}
+
+function setClickStyle(v){ clickStyle=v; }
+function setClickVol(v){ clickVol=v/100; }
+
+// ─────────────── KB OVERLAY ───────────────
+function applyKBOverlay(){
+  const ov = document.getElementById('kb-overlay');
+  ov.classList.toggle('show', mods.kbOverlay);
+}
+
+function setKBColor(c){
+  kbColor=c;
+  document.getElementById('kb-color-swatch').style.background=c;
+  document.querySelectorAll('.kb-key').forEach(k=>k.style.setProperty('--kb-color',c));
+}
+
+function triggerKB(idx){
+  const el = document.getElementById('kbk-'+idx);
+  if(!el) return;
+  el.classList.add('pressed');
+  if(mods.kbSound) playKeySound(clickStyle);
+  setTimeout(()=>el.classList.remove('pressed'), 180);
+}
+
+function buildKBSlots(){
+  const container = document.getElementById('kb-edit-slots');
+  container.innerHTML='';
+  kbBinds.forEach((b,i)=>{
+    const row = document.createElement('div');
+    row.className='keybind-slot';
+    row.innerHTML=`
+      <span class="kb-label">${b.action}</span>
+      <button class="kb-key-btn" id="kbslot-${i}" onclick="listenForKey(${i})">${b.key}</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function listenForKey(idx){
+  if(listenIdx !== -1) return;
+  listenIdx = idx;
+  const btn = document.getElementById('kbslot-'+idx);
+  btn.classList.add('listening');
+  btn.textContent='...';
+  const handler = e=>{
+    e.preventDefault();
+    const newKey = e.key.toUpperCase().slice(0,2);
+    kbBinds[idx].key = newKey;
+    document.getElementById('kb-key-label-'+idx).textContent=newKey;
+    btn.textContent=newKey;
+    btn.classList.remove('listening');
+    listenIdx=-1;
+    window.removeEventListener('keydown',handler);
+  };
+  window.addEventListener('keydown',handler);
+}
+
+// Listen for keybind presses
+window.addEventListener('keydown',e=>{
+  if(listenIdx!==-1) return;
+  if(!mods.kbOverlay) return;
+  kbBinds.forEach((b,i)=>{
+    if(e.key.toUpperCase()===b.key.toUpperCase()) triggerKB(i);
+  });
+});
+
+// ─────────────── CROSSHAIR ───────────────
+let crosshairStyle = 'cross';
+function setCrosshairStyle(v){ crosshairStyle=v; drawCrosshair(); }
+function applyCrosshair(){
+  const c=document.getElementById('xhair-canvas');
+  c.style.display = mods.crosshair ? 'block' : 'none';
+  if(mods.crosshair) drawCrosshair();
+}
+function drawCrosshair(){
+  const c=document.getElementById('xhair-canvas');
+  const gv=document.getElementById('game-view');
+  if(gv.style.display==='flex'){
+    c.width=window.innerWidth; c.height=window.innerHeight;
+    const ctx2=c.getContext('2d');
+    ctx2.clearRect(0,0,c.width,c.height);
+    const cx=c.width/2, cy=c.height/2;
+    ctx2.strokeStyle='rgba(200,0,0,0.85)';
+    ctx2.lineWidth=1.5;
+    ctx2.shadowBlur=4; ctx2.shadowColor='red';
+    if(crosshairStyle==='cross'){
+      ctx2.beginPath(); ctx2.moveTo(cx-12,cy); ctx2.lineTo(cx+12,cy); ctx2.stroke();
+      ctx2.beginPath(); ctx2.moveTo(cx,cy-12); ctx2.lineTo(cx,cy+12); ctx2.stroke();
+    } else if(crosshairStyle==='dot'){
+      ctx2.beginPath(); ctx2.arc(cx,cy,3,0,Math.PI*2); ctx2.fillStyle='rgba(200,0,0,.85)'; ctx2.fill();
+    } else if(crosshairStyle==='circle'){
+      ctx2.beginPath(); ctx2.arc(cx,cy,10,0,Math.PI*2); ctx2.stroke();
+    } else if(crosshairStyle==='t'){
+      ctx2.beginPath(); ctx2.moveTo(cx-10,cy); ctx2.lineTo(cx+10,cy); ctx2.stroke();
+      ctx2.beginPath(); ctx2.moveTo(cx,cy); ctx2.lineTo(cx,cy+10); ctx2.stroke();
+    }
+  }
+}
+window.addEventListener('resize',()=>{ if(mods.crosshair) drawCrosshair(); });
+
+// ─────────────── ZOOM ───────────────
+function setZoom(v){
+  document.getElementById('zoom-val').textContent=v+'%';
+  const f=document.getElementById('gameFrame');
+  if(f) f.style.zoom=(v/100);
+}
+
+// ─────────────── BRIGHTNESS ───────────────
+function setBrightness(v){
+  document.getElementById('bright-val').textContent=v+'%';
+  document.getElementById('app').style.filter=`brightness(${v/100})`;
+}
+
+// ─────────────── LOW MOTION ───────────────
+function applyLowMotion(){
+  if(mods.lowMotion){
+    document.querySelectorAll('.game-card').forEach(c=>{c.style.transition='none'});
+  } else {
+    document.querySelectorAll('.game-card').forEach(c=>{c.style.transition=''});
+  }
+}
+
+// ─────────────── DARK BORDER ───────────────
+function applyDarkBorder(){
+  const w=document.querySelector('.gframe-wrap');
+  if(!w) return;
+  if(mods.darkBorder){
+    w.style.boxShadow='inset 0 0 30px rgba(0,0,0,.6)';
+  } else {
+    w.style.boxShadow='';
+  }
+}
+
+// ─────────────── CLEAR CACHE ───────────────
+function clearCache(){
+  games=[];
+  document.getElementById('games-area').innerHTML='<div class="loading-wrap"><div class="spinner"></div><span>Reloading...</span></div>';
+  init();
+  closeModMenu();
+  showToast('Cache cleared');
+}
+
+// ─── COPY GAME URL ───
+function copyGameURL(){
+  if(!curURL){ showToast('No game open'); return; }
+  navigator.clipboard.writeText(curURL).then(()=>showToast('URL copied!')).catch(()=>showToast('Copy failed'));
+}
+
+// ─── CLICK COUNTER & CPS ───
+let clickCount = 0;
+let cpsClicks = [];
+let cpsInterval = null;
+
+document.addEventListener('mousedown', ()=>{
+  clickCount++;
+  const el = document.getElementById('click-count-val');
+  if(el) el.textContent = clickCount;
+  if(mods.cpsMeter) cpsClicks.push(Date.now());
+});
+
+function resetClickCount(){
+  clickCount=0;
+  const el=document.getElementById('click-count-val');
+  if(el) el.textContent='0';
+}
+
+function startCPS(){
+  if(cpsInterval) clearInterval(cpsInterval);
+  const bar = document.getElementById('cps-bar');
+  cpsInterval = setInterval(()=>{
+    const now=Date.now();
+    cpsClicks = cpsClicks.filter(t=>now-t<1000);
+    const cps = cpsClicks.length;
+    if(bar){ bar.textContent=cps+' CPS'; bar.style.color=cps>8?'#ff4444':cps>4?'#ffaa00':'#00ff41'; }
+  },100);
+}
+function stopCPS(){
+  if(cpsInterval) clearInterval(cpsInterval);
+  const bar=document.getElementById('cps-bar');
+  if(bar) bar.textContent='';
+}
+
+// ─── SENSITIVITY DISPLAY ───
+function setSens(v){
+  const s=(v/10).toFixed(1);
+  document.getElementById('sens-val').textContent=s+'x';
+}
+
+// ─── RGB MODE ───
+let rgbAngle=0, rgbRAF=null;
+function startRGB(){
+  function loop(){
+    rgbAngle=(rgbAngle+1.5)%360;
+    const c=`hsl(${rgbAngle},100%,55%)`;
+    setKBColor(c);
+    rgbRAF=requestAnimationFrame(loop);
+  }
+  rgbRAF=requestAnimationFrame(loop);
+}
+function stopRGB(){
+  if(rgbRAF) cancelAnimationFrame(rgbRAF);
+  setKBColor('#8b0000');
+}
+
+// ─── PARTICLES ───
+let particleColor = '#8b0000';
+function setParticleColor(c){ particleColor=c; }
+
+function spawnParticles(x, y){
+  const count=8;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    const angle=(i/count)*360;
+    const dist=30+Math.random()*30;
+    const rad=angle*(Math.PI/180);
+    const dx=Math.cos(rad)*dist, dy=Math.sin(rad)*dist;
+    const size=3+Math.random()*4;
+    p.style.cssText=`position:fixed;left:${x}px;top:${y}px;width:${size}px;height:${size}px;border-radius:50%;background:${particleColor};pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:all 0.45s ease-out;opacity:1`;
+    document.body.appendChild(p);
+    requestAnimationFrame(()=>{
+      p.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+      p.style.opacity='0';
+    });
+    setTimeout(()=>p.remove(),500);
+  }
+}
+
+document.addEventListener('mousedown',e=>{
+  if(mods.particles) spawnParticles(e.clientX,e.clientY);
+});
+
+// ─── SCREEN SHAKE ───
+let shakeTimeout=null;
+document.addEventListener('mousedown',()=>{
+  if(!mods.screenShake) return;
+  const gv=document.getElementById('game-view');
+  if(gv.style.display!=='flex') return;
+  gv.style.animation='none';
+  void gv.offsetWidth;
+  gv.style.animation='shakeFrame 0.18s ease';
+  clearTimeout(shakeTimeout);
+  shakeTimeout=setTimeout(()=>gv.style.animation='',200);
+});
+
+// ─── VIGNETTE ───
+let vignetteEl=null;
+function applyVignette(){
+  if(mods.vignette){
+    if(!vignetteEl){
+      vignetteEl=document.createElement('div');
+      vignetteEl.id='vignette-overlay';
+      vignetteEl.style.cssText='position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);pointer-events:none;z-index:9998';
+      document.body.appendChild(vignetteEl);
+    }
+  } else {
+    if(vignetteEl){ vignetteEl.remove(); vignetteEl=null; }
+  }
+}
+
+// ─── HUE SHIFT ───
+function setHue(v){
+  document.getElementById('hue-val').textContent=v+'°';
+  const f=document.getElementById('gameFrame');
+  if(f) f.style.filter=v==0?'':'hue-rotate('+v+'deg)';
+}
+
+// ─── CUSTOM CURSOR ───
+function applyCustomCursor(){
+  if(mods.customCursor){
+    document.body.style.cursor='crosshair';
+  } else {
+    document.body.style.cursor='';
+  }
+}
+
+// ─── IMAGE QUALITY ───
+function setImgQuality(v){
+  document.querySelectorAll('.game-card img').forEach(img=>{
+    img.style.imageRendering=v==='auto'?'':v;
+  });
+}
+
+// ─── HW ACCEL ───
+function applyHWAccel(){
+  const f=document.getElementById('gameFrame');
+  if(!f) return;
+  f.style.willChange=mods.hwAccel?'transform':'';
+  f.style.transform=mods.hwAccel?'translateZ(0)':'';
+}
+
+// ─── SESSION STATS ───
+let sessionStart=Date.now();
+let gamesOpenedCount=0;
+let sessionInterval=null;
+
+function startSessionTimer(){
+  sessionInterval=setInterval(()=>{
+    const el=document.getElementById('session-time-val');
+    if(!el) return;
+    const s=Math.floor((Date.now()-sessionStart)/1000);
+    const m=Math.floor(s/60).toString().padStart(2,'0');
+    const sec=(s%60).toString().padStart(2,'0');
+    el.textContent=m+':'+sec;
+  },1000);
+}
+
+function resetStats(){
+  sessionStart=Date.now();
+  gamesOpenedCount=0;
+  clickCount=0;
+  const go=document.getElementById('games-opened-val');
+  const cc=document.getElementById('click-count-val');
+  const st=document.getElementById('session-time-val');
+  if(go) go.textContent='0';
+  if(cc) cc.textContent='0';
+  if(st) st.textContent='00:00';
+  showToast('Stats reset');
+}
+
+startSessionTimer();
+
+// ─── CPS BAR DOM ───
+(function(){
+  const bar=document.createElement('div');
+  bar.id='cps-bar';
+  bar.style.cssText='position:fixed;top:60px;right:10px;background:rgba(0,0,0,.75);border:1px solid rgba(139,0,0,.4);color:#00ff41;font-family:Share Tech Mono,monospace;font-size:12px;padding:4px 9px;border-radius:4px;z-index:99997;pointer-events:none;letter-spacing:1px;display:none';
+  document.body.appendChild(bar);
+})();
+
+// ─────────────── SECRET DOOR ───────────────
+function showCodeModal(){
+  if(modUnlocked){ openModMenu(); return; }
+  document.getElementById('code-modal').classList.add('show');
+  document.getElementById('code-input').value='';
+  document.getElementById('code-error').textContent='';
+  setTimeout(()=>document.getElementById('code-input').focus(),100);
+}
+function hideCodeModal(){
+  document.getElementById('code-modal').classList.remove('show');
+}
+function submitCode(){
+  const v=document.getElementById('code-input').value;
+  if(v===SECRET_CODE){
+    modUnlocked=true;
+    document.getElementById('secret-dot').classList.add('unlocked');
+    hideCodeModal();
+    openModMenu();
+    buildKBSlots();
+    playKeySound('cream');
+  } else {
+    document.getElementById('code-error').textContent='Invalid code. Try again.';
+    document.getElementById('code-input').value='';
+    document.getElementById('code-input').focus();
+    // shake
+    const box=document.querySelector('.code-box');
+    box.style.animation='none';
+    box.style.transform='translateX(-6px)';
+    setTimeout(()=>{ box.style.transform='translateX(6px)'; },80);
+    setTimeout(()=>{ box.style.transform=''; },160);
+  }
+}
+document.getElementById('code-input').addEventListener('keydown',e=>{ if(e.key==='Enter') submitCode(); });
+document.getElementById('code-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('code-modal')) hideCodeModal(); });
+
+// ─────────────── MOD MENU ───────────────
+function openModMenu(){ document.getElementById('mod-menu').classList.add('open'); }
+function closeModMenu(){ document.getElementById('mod-menu').classList.remove('open'); }
+
+// ─────────────── FONT / GRID ───────────────
+function pick(sel,el){ document.querySelectorAll(sel).forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+function setFont(el){ pick('[data-font]',el); document.body.className=el.dataset.font; }
+function setGrid(el){
+  pick('[data-grid]',el);
+  const sz=el.dataset.grid+'px';
+  document.querySelectorAll('.grid').forEach(g=>g.style.gridTemplateColumns=`repeat(auto-fill,minmax(${sz},1fr))`);
+}
+function setAnim(el){
+  pick('[data-anim]',el);
+  if(el.dataset.anim==='off') mods.lowMotion=true; else mods.lowMotion=false;
+  applyLowMotion();
+}
+
+// ─────────────── SETTINGS ───────────────
+function tog(a){ ['settings','set-backdrop'].forEach(id=>document.getElementById(id).classList.toggle('open',a)); }
+function openSettings(){ tog(true); }
+function closeSettings(){ tog(false); }
+
+// ─────────────── FETCH ZONES ───────────────
+async function fetchZones(){
+  try{
+    const r=await fetch('https://api.github.com/repos/freebuisness/assets/commits?per_page=1&t='+Date.now());
+    if(r.ok){
+      const j=await r.json(); const sha=j[0]?.sha;
+      if(sha){
+        const r2=await fetch(`https://cdn.jsdelivr.net/gh/freebuisness/assets@${sha}/zones.json?t=`+Date.now());
+        if(r2.ok) return r2.json();
+      }
+    }
+  }catch(_){}
+  const r3=await fetch(ZONES_URL+'?t='+Date.now());
+  if(!r3.ok) throw new Error('zones '+r3.status);
+  return r3.json();
+}
+
+// ─────────────── CARDS ───────────────
+function mkCard(item){
+  const div=document.createElement('div');
+  div.className='game-card';
+  const imgSrc=item.cover.replace("{COVER_URL}",COVERS_BASE).replace("{HTML_URL}",HTML_BASE);
+  div.innerHTML=`
+    <div class="img-box">
+      <img src="${imgSrc}" loading="lazy" alt="${item.name}" onerror="this.style.opacity='.18'">
+      <div class="play-badge"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>
+    <div class="title-bar"><div class="card-dot"></div><div class="game-name">${item.name}</div></div>`;
+  div.onclick=()=>{ if(mods.clickSounds) playKeySound(clickStyle); openGame(item); };
+  return div;
+}
+
+function draw(data){
+  const area=document.getElementById('games-area');
+  area.innerHTML='';
+  const featured=data.filter(g=>g.featured);
+  const rest=data.filter(g=>!g.featured);
+  if(featured.length){
+    const h=document.createElement('div'); h.className='section-head';
+    h.innerHTML='<span class="section-label">Top Picks</span><div class="section-line"></div>';
+    area.appendChild(h);
+    const fg=document.createElement('div'); fg.id='featured'; fg.className='grid';
+    featured.forEach(i=>fg.appendChild(mkCard(i)));
+    area.appendChild(fg);
+  }
+  const h2=document.createElement('div'); h2.className='section-head';
+  h2.innerHTML='<span class="section-label">All Games</span><div class="section-line"></div>';
+  area.appendChild(h2);
+  const mg=document.createElement('div'); mg.id='main-grid'; mg.className='grid';
+  if(rest.length){ rest.forEach(i=>mg.appendChild(mkCard(i))); }
+  else if(!featured.length){ mg.innerHTML='<div class="error-wrap"><h3>No games found</h3></div>'; }
+  area.appendChild(mg);
+  if(mods.lowMotion) applyLowMotion();
+}
+
+async function init(){
+  document.getElementById('games-area').innerHTML='<div class="loading-wrap"><div class="spinner"></div><span>Loading Games...</span></div>';
+  try{
+    games=await fetchZones();
+    if(!Array.isArray(games)||!games.length) throw new Error('empty');
+    draw(games);
+  }catch(e){
+    document.getElementById('games-area').innerHTML=
+      '<div class="error-wrap"><h3>Could not load games</h3><p>Check your connection and try again.</p><br><button class="retry-btn" onclick="init()">Retry</button></div>';
+  }
+}
+
+function filter(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  if(!games.length) return;
+  draw(q?games.filter(g=>g.name.toLowerCase().includes(q)):games);
+}
+
+// ─────────────── OPEN GAME ───────────────
+function resetFrame(){
+  const wrap=document.querySelector('.gframe-wrap');
+  const old=document.getElementById('gameFrame');
+  if(old) old.remove();
+  const f=document.createElement('iframe');
+  f.id='gameFrame'; f.allowFullscreen=true;
+  f.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock');
+  f.style.cssText='flex:1;border:none;width:100%;height:100%;display:block;background:#fff';
+  const ig=document.getElementById('fps-in-game');
+  wrap.insertBefore(f, ig);
+  return f;
+}
+
+async function openGame(item){
+  curItem=item; curName=item.name;
+  curURL=item.url.replace("{COVER_URL}",COVERS_BASE).replace("{HTML_URL}",HTML_BASE);
+  curHTML='';
+  document.getElementById('display-name').innerText=item.name;
+  gamesOpenedCount++;
+  const goEl=document.getElementById('games-opened-val');
+  if(goEl) goEl.textContent=gamesOpenedCount;
+  const gv=document.getElementById('game-view');
+  gv.classList.remove('closing','opening');
+  gv.style.display='flex';
+  void gv.offsetWidth;
+  gv.classList.add('opening');
+  document.body.style.overflow='hidden';
+  // show fps in game
+  if(mods.fps) document.getElementById('fps-in-game').classList.add('show');
+  if(mods.crosshair){ applyCrosshair(); setTimeout(drawCrosshair,100); }
+  applyDarkBorder();
+  applyHWAccel();
+  if(mods.vignette) applyVignette();
+  const f=resetFrame();
+  try{
+    const res=await fetch(curURL+'?t='+Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const html=await res.text();
+    curHTML=html;
+    f.contentDocument.open();
+    f.contentDocument.write(html);
+    f.contentDocument.close();
+  }catch(e){
+    f.src=curURL;
+  }
+}
+
+function openInTab(){
+  const w=window.open('about:blank','_blank');
+  if(!w){ alert('Allow popups!'); return; }
+  if(curHTML){ w.document.open(); w.document.write(curHTML); w.document.close(); }
+  else if(curURL){
+    fetch(curURL+'?t='+Date.now())
+      .then(r=>r.text())
+      .then(html=>{ w.document.open(); w.document.write(html); w.document.close(); })
+      .catch(()=>{ w.location.href=curURL; });
+  }
+}
+
+function closeGame(){
+  const gv=document.getElementById('game-view');
+  gv.classList.add('closing');
+  document.getElementById('fps-in-game').classList.remove('show');
+  document.getElementById('xhair-canvas').style.display='none';
+  gv.addEventListener('animationend',()=>{
+    gv.style.display='none';
+    gv.classList.remove('closing');
+    resetFrame();
+    document.body.style.overflow='auto';
+    curName=''; curItem=null; curURL=''; curHTML='';
+  },{once:true});
+}
+
+async function downloadGame(){
+  const b=document.getElementById('dl-btn');
+  b.style.opacity='.5';
+  try{
+    let html=curHTML;
+    if(!html&&curURL){ const res=await fetch(curURL+'?t='+Date.now()); html=await res.text(); curHTML=html; }
+    if(html){
+      const blob=new Blob([html],{type:'text/html'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=(curName.replace(/\s+/g,'_')||'game')+'.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+      showToast();
+    }
+  }catch(e){ console.error(e); }
+  b.style.opacity='';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(msg) t.querySelector('svg').nextSibling.textContent=' '+(msg||'Downloaded from TafoHub');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function toggleFS(){
+  const f=document.getElementById('gameFrame');
+  const req=f.requestFullscreen||f.webkitRequestFullscreen;
+  if(req) req.call(f);
+}
+
+function dismissBanner(){ document.getElementById('new-banner').classList.remove('show'); }
+async function reloadGames(){
+  dismissBanner();
+  try{
+    games=await fetchZones();
+    const q=document.getElementById('search').value.toLowerCase().trim();
+    draw(q?games.filter(g=>g.name.toLowerCase().includes(q)):games);
+  }catch(e){ console.error(e); }
+}
+
+setInterval(async()=>{
+  try{
+    const fresh=await fetchZones();
+    const known=new Set(games.map(g=>g.name));
+    const newOnes=fresh.filter(g=>!known.has(g.name));
+    if(!newOnes.length) return;
+    games=fresh;
+    const n=newOnes.length;
+    document.getElementById('nb-msg').textContent=`${n} new game${n>1?'s':''} added — ${newOnes.map(g=>g.name).join(', ')}`;
+    document.getElementById('new-banner').classList.add('show');
+    setTimeout(dismissBanner,8000);
+  }catch(_){}
+},30000);
+
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeGame(); closeModMenu(); hideCodeModal(); } });
+
+// Init KB color
+setKBColor('#8b0000');
+// Build KB slots on load just in case
+buildKBSlots();
+init();
+</script>
+</body>
+</html>
